@@ -1,0 +1,163 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid rgb(27, 26, 26);
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .tablecss tr {
+        background-color: rgb(150, 208, 231);
+        ;
+    }
+
+    .tablecss tr:hover {
+        background-color: rgb(207, 241, 247);
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+
+    }
+</style>
+
+<script>
+    const voterid = sessionStorage.getItem("voterid");
+    const voterId = sessionStorage.getItem("VoterId");
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(JSON.parse(this.responseText));
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+    function SearchDetails() {
+        const constituency = document.getElementById("constituency").value;
+        const getUsersPromise = performAjax("GET", `http://localhost:3344/Voter/candidateData?constituency=${constituency}`);
+        getUsersPromise
+            .then((List) => {
+                loadCandidateData(List);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+    function loadCandidateData(records) {
+        const tableHeader = `<tr><th style="text-align:center">Sno</th><th style="height:20%;text-align:center">CandidateName</th><th style="height:20%;text-align:center">NominationFor</th><th style="height:20%;text-align:center">Photo</th><th style="height:20%;text-align:center">PartySymbol</th><th style="height:20%;text-align:center">VOTE</th></tr>`;
+        if (records.length > 0) {
+            let tableRows = records.map((user, index) => {
+                let editButton = `<a class="fa fa-check "  id="${user._id}"   style="color:blue; font-size:22px;" onclick="voting('${user._id}')" ></a>`;
+                return `<tr><td>${index + 1}</td><td>${user.userName}</td><td>${user.nominationFor}</td><td><img src="${user.image}" height="50" width="50"/></td><td><img src="${user.symbol}" height="50" width="50"/></td><td>&nbsp;${editButton}&nbsp;</td></tr>`;
+            });
+            document.getElementById("table").innerHTML = `<table  border="2"> ${tableHeader}${tableRows.join('')}</table>`;
+        }
+        else {
+            tableRows = `<tr><td colspan="18" align="center">No Data Found</td></tr>`;
+            document.getElementById("table").innerHTML = `${tableHeader}${tableRows}`;
+        }
+    }
+
+    function voting(id) {
+        event.preventDefault();
+        sessionStorage.setItem("candidateid", id);
+        window.location.href = "votingResultPage"
+
+    }
+
+
+</script>
+
+<body style=" background-color: rgb(0, 0, 0, 0);"><br><br><br>
+    <center>
+        <h1 style="color:#0099ff;">Candidate Details</h1>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;<input type="text" id="constituency" autocomplete="off" placeholder="Enter your Constiuency">
+        <button class="btn-primary" type="button" onclick="SearchDetails()">Search</button>
+        <br><br>
+    </center>
+    <div class="row">
+        <div class="col-sm-2"><input type="hidden" id="userName" class="form-control"></div>
+        <div class="col-sm-2"><input type="hidden" id="nominationFor" class="form-control"></div>
+        <div class="col-sm-1"><img src="" id="image" alt="Smiley face" style="display: none;" height="42" width="42">
+        </div>
+        <div class="col-sm-1"><img src="" id="symbol" alt="Smiley face" style="display: none;" height="42" width="42">
+        </div>
+        <div class="col-sm-2"></div>
+    </div><br>
+    <div class="container-fluid">
+        <input type="hidden" id="id" placeholder="Enter Role" class="form-control">
+        <table id="table" class="tablecss"></table>
+    </div>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Voting Details</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-2"><input type="hidden" id="userName" class="form-control"></div>
+                        <div class="col-sm-2"><input type="hidden" id="nominationFor" class="form-control"></div>
+                        <div class="col-sm-1"><img src="" id="image" alt="Smiley face" style="display: none;"
+                                height="42" width="42"></div>
+                        <div class="col-sm-1"><img src="" id="symbol" alt="Smiley face" style="display: none;"
+                                height="42" width="42"></div>
+                        <div class="col-sm-2"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+
+                        <div class="col-sm-4">Vote<input type="text" id="result" class="form-control"></div>
+                    </div><br>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-1">
+                        <center><button data-dismiss="modal" type="button" onclick="CandidateUpdate()"
+                                class="btn btn-primary">Update</button></center>
+                    </div>
+                    <div class="col-sm-1">
+                        <center><button type="button" onclick="cancel()" style="display: none;"
+                                class="btn btn-primary">Cancel</button></center>
+                    </div>
+                    <div class="col-sm-5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

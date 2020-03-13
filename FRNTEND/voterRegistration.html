@@ -1,0 +1,186 @@
+<html>
+
+<head>
+    <title>registration form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        h3 {
+            color: #b8b8b8;
+        }
+    </style>
+</head>
+<script>
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+    function loadData() {
+        const getPromise = performAjax("GET", "http://localhost:3344/Voter/getConstituency");
+        getPromise
+            .then((statesData) => {
+                getStates(statesData);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function getStates(states) {
+        let name = document.getElementById("constituency");
+        const getValue = JSON.parse(states);
+        for (let i = 0; i < getValue.length; i++) {
+            const getData = document.createElement("OPTION");
+            getData.innerHTML = getValue[i].constituency;
+            getData.value = getValue[i].constituency;
+            name.options.add(getData);
+        }
+    }
+    function VoterRegister() {
+        const userName = document.getElementById("userName").value;
+        const fatherName = document.getElementById("fatherName").value;
+        const email = document.getElementById("email").value;
+        const password = Math.floor((Math.random() * 1000) + 1);
+        const gender = document.getElementById("male").checked ? "Male" : "Female";
+        const constituency = document.getElementById("constituency").value;
+        const dob = document.getElementById("dob").value;
+        const village = document.getElementById("village").value;
+        const mandal = document.getElementById("mandal").value;
+        const caste = document.getElementById("caste").value;
+        const voterId = "";
+        const adharNo = document.getElementById("adharNo").value;
+        const address = document.getElementById("address").value;
+        const status = "Pending";
+        const image = document.getElementById("image").files;
+        if (image.length > 0) {
+            var fileToLoad = image[0];
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                const filepath = fileLoadedEvent.target.result;
+                const getSendFilePromise = performAjax(
+                    "POST",
+                    "http://localhost:3344/Voter/voterRegistration",
+                    JSON.stringify({ userName, fatherName, email, password, gender, dob, village, mandal, caste, constituency, voterId, adharNo, address, status, image: filepath })
+                );
+                getSendFilePromise
+                    .then((sendFilePromise) => {
+                        alert('Registration Successfully');
+                        cancel();
+                    })
+                    .catch(err => {
+                        alert(err.message);
+                    })
+            }
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+    function cancel() {
+        document.getElementById("userName").value = "";
+        document.getElementById("fatherName").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("male").value = "";
+        document.getElementById("dob").value = "";
+        document.getElementById("caste").value = "";
+        document.getElementById("village").value = "";
+        document.getElementById("mandal").value = "";
+        document.getElementById("constituency").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("voterId").value = "";
+        document.getElementById("adharNo").value = "";
+        document.getElementById("address").value = "";
+    }
+
+</script>
+
+<body onload="loadData()" style=" background-color: rgb(0, 0, 0, 0); " class="container-fluid"><br>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <center>
+                <h3 style="color:black">Voter Registration</h3>
+            </center>
+        </div>
+        <div class="col-sm-2"></div>
+    </div><br><br>
+    <form action="">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><strong>UserName</strong><input type="text" id="userName" class="form-control"></div>
+            <div class="col-sm-2"><strong>FatherName</strong><input type="text" id="fatherName" class="form-control">
+            </div>
+            <div class="col-sm-2"><strong>Email Id</strong><input type="email" id="email" class="form-control"></div>
+            <div class="col-sm-3"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>DOB</strong><input type="date" id="dob" class="form-control"></div>
+            <div class="col-sm-2"><strong>Gender</strong><br>
+                <input type="radio" name="gender" value="Male" id="male"><strong>Male</strong>
+                <input type="radio" name="gender" value="Female" id="female"><strong>Female</strong>
+            </div>
+            <div class="col-sm-2"><strong>Village</strong><input type="text" id="village" class="form-control"></div>
+            <div class="col-sm-2"><strong>Mandal</strong><input type="text" id="mandal" class="form-control"></div>
+            <div class="col-sm-2"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>Constituency</strong>
+                <select name="" id="constituency" class="form-control">
+                    <option value="" disabled="disabled" selected="selected">--select--</option>
+                </select></div>
+            <div class="col-sm-2"><strong>Cast</strong>
+                <select name="" id="caste" class="form-control">
+                    <option value="" disabled="disabled" selected="selected">--select--</option>
+                    <option value="OC">OC</option>
+                    <option value="BC">BC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                </select>
+            </div>
+            <div class="col-sm-2"><strong>Income</strong><input type="number" id="income" class="form-control"></div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>AadharNo</strong><input type="number" id="adharNo" class="form-control"></div>
+            <div class="col-sm-2"><strong>VoterId</strong><input type="text" disabled="false" id="voterId"
+                    class="form-control"></div>
+            <div class="col-sm-2"><strong>Address</strong> <textarea name="" id="address"
+                    class="form-control"></textarea></div>
+            <div class="col-sm-2"><strong>Image</strong><input type="file" id="image" class="form-control"></div>
+            <div class="col-sm-2"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-2">
+                <center><button type="button" onclick="VoterRegister()"
+                        class="btn btn-primary btn-block">Register</button></center>
+            </div>
+            <div class="col-sm-5"><button type="button" onclick="cancel()" style="display: none;"
+                    class="btn btn-primary btn-block">Cancel</button></center>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

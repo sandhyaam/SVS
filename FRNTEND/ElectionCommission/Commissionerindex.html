@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .text {
+            color: green;
+            line-height: 30px;
+        }
+
+        .text:hover {
+            background-color: #f1f1f1;
+            color: green;
+        }
+
+        nav {
+            background-image: linear-gradient(to right, rgba(201, 248, 220, 0), rgb(171, 218, 173));
+        }
+    </style>
+</head>
+
+<body
+    style="background-image: url(i.jpg);background-repeat: no-repeat;background-size: cover; background-color: transparent">
+    <div class="container-fluid">
+        <nav class="mb-1 navbar navbar-expand-lg" style="border-bottom: 2px solid #5D6D7E;">
+            <a class="navbar-brand" href="">
+                <h2><img src="logo.png" alt="" style="width: 80px;height: 80px;"></h2>
+            </a>
+            <h1 style="color: green;">i-Voting</h1>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4"
+                aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="material-icons" style="font-size:35px;color:green">menu</i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/" target="iframe">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/Election/addConstituencys"
+                            target="iframe">Add Constituency</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/Election/viewVoters"
+                            target="iframe">Voter</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/Election/viewCandidates"
+                            target="iframe">Candidate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text" href="http://localhost:3000/Election/ViewResults" target="iframe">View
+                            Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text" href="#userlogout" onclick="userlogout()" target="iframe">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <iframe src="" frameborder="0" id="iframe" name="iframe" style="height: 80%;width: 100%;">
+
+    </iframe>
+    <br>
+    <div id="userlogout">
+        <script>
+            function userlogout() {
+                window.location.href = "/";
+            }
+        </script>
+    </div>
+</body>
+
+</html>

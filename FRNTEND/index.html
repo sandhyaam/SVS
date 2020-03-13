@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <title>i-Voting</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .text {
+            color: green;
+            line-height: 30px;
+        }
+
+        .text:hover {
+            color: green;
+        }
+
+        nav {
+            background-image: linear-gradient(to right, rgba(201, 248, 220, 0), rgb(171, 218, 173));
+        }
+
+        footer {
+            text-align: center;
+            color: black;
+            padding: 2px;
+            background: rgb(211, 245, 211);
+        }
+    </style>
+</head>
+
+<body
+    style="background-image: url(i.jpg);background-repeat: no-repeat;background-size: cover; background-color: transparent">
+    <div class="container-fluid">
+        <nav class="mb-1 navbar navbar-expand-lg" style="border-bottom: 2px solid #5D6D7E;">
+            <a class="navbar-brand" href="">
+                <h2><img src="logo.png" alt="" style="width: 80px;height: 80px;"></h2>
+            </a>
+            <h1 style="color: green;">i-Voting</h1>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4"
+                aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="material-icons" style="font-size:35px;color:green">menu</i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/" target="iframe">Home</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle text" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Login
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item textdd" href="http://localhost:3000/election"
+                                target="iframe">Commissioner Login</a>
+                            <a class="dropdown-item textdd" href="http://localhost:3000/voter" target="iframe">Voter
+                                Login</a>
+                            <a class="dropdown-item textdd" href="http://localhost:3000/candidate"
+                                target="iframe">Candidate Login</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text" href="http://localhost:3000/about" target="iframe">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text" href="http://localhost:3000/contact" target="iframe">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <iframe src="" frameborder="0" id="iframe" name="iframe" style="height: 80%;width: 100%;">
+
+    </iframe>
+
+    <footer>
+        <h5>© 2019 All Rights Reserved | Smart Voting System</h5>
+    </footer>
+</body>
+</body>
+
+</html>

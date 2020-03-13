@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        h3 {
+            color: black;
+        }
+    </style>
+</head>
+<script>
+    function perFormAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource Not Found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function Candidate() {
+        const userName = document.getElementById("userName").value;
+        const password = document.getElementById("password").value;
+        const getLoginPromise = perFormAjax(
+            "GET",
+            `http://localhost:3344/Candidate/candidateLogin?userName=${userName}&password=${password}`
+        );
+        getLoginPromise
+            .then((loginPromise) => {
+                if (loginPromise == "" || loginPromise == null) {
+                    alert('Login Faild');
+                }
+                else {
+                    const data = JSON.parse(loginPromise);
+                    const users = [data].map(record => {
+                        return record;
+                    });
+                    users.map(login => {
+                        sessionStorage.setItem("candidateid", login._id);
+                        sessionStorage.setItem("email", login.email);
+                        sessionStorage.setItem("userName", login.userName);
+                        window.top.location.href = "candidatePage";
+                    });
+                }
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+
+</script>
+
+<body class="container" style=" background-color: rgb(0, 0, 0, 0);"><br><br><br>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <center>
+                <h3>Candidate Login</h3>
+            </center>
+        </div>
+        <div class="col-sm-2"></div>
+    </div><br><br>
+
+    <form action="">
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-1"><strong>User_Name</strong> </div>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="userName">
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-1"><strong>Password</strong></div>
+            <div class="col-sm-3">
+                <input type="password" class="form-control" id="password">
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <button type="button" onclick="Candidate()" class="btn btn-primary btn-block">Login</button>
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4" style="text-align: right "><a style="color:red;font-size: 20px;"
+                    href="http://localhost:3000/candidateRegistration">Register
+                    Here?</a></div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4" style="text-align: right;"><a style="color: red;font-size: 20px;"
+                    href="http://localhost:3000/Candidateforgotpassword">forgot
+                    password?</a></div>
+            <div class="col-sm-4"></div>
+        </div>
+    </form>
+</body>
+
+</html>

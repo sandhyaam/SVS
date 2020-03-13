@@ -1,0 +1,250 @@
+<html>
+
+<head>
+    <title>registration form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        h3 {
+            color: black;
+        }
+    </style>
+</head>
+<script>
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function CandidateRegistration() {
+        const userName = document.getElementById("userName").value;
+        const fatherName = document.getElementById("fatherName").value;
+        const email = document.getElementById("email").value;
+        const password = Math.floor((Math.random() * 1000) + 1);
+        const phoneNo = document.getElementById("phoneNo").value;
+        const gender = document.getElementById("male").checked ? "Male" : "Female";
+        const dob = document.getElementById("dob").value;
+        const caste = document.getElementById("caste").value;
+        const income = document.getElementById("income").value;
+        const state = document.getElementById("state").value;
+        const constituency = document.getElementById("constituency").value;
+        const nominationFor = document.getElementById("nominationFor").value;
+        const voterId = document.getElementById("voterId").value;
+        const adharNo = document.getElementById("adharNo").value;
+        const address = document.getElementById("address").value;
+        const status = "Pending";
+
+        const image = document.getElementById("image").files;
+        const symbol = document.getElementById("symbol").files;
+        if (image.length > 0) {
+            var fileToLoad = image[0];
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                const filepath = fileLoadedEvent.target.result;
+                if (symbol.length > 0) {
+                    var symbolToLoad = symbol[0];
+                    var symbolReader = new FileReader();
+                    symbolReader.onload = function (fileLoadedEvent) {
+                        const symbolpath = fileLoadedEvent.target.result;
+                        const addPromise = performAjax(
+                            "POST",
+                            "http://localhost:3344/Candidate/condidateRegistration",
+                            JSON.stringify({ userName, fatherName, email, password, phoneNo, gender, dob, caste, income, state, constituency, nominationFor, voterId, adharNo, address, status, image: filepath, symbol: symbolpath })
+                        );
+                        addPromise
+                            .then(newList => {
+                                alert('Registration Successfully Completed');
+                                cancel();
+
+                            })
+                            .catch(err => {
+                                alert(err.message);
+                            })
+                    }
+                    symbolReader.readAsDataURL(symbolToLoad);
+                }
+            }
+            fileReader.readAsDataURL(fileToLoad);
+        }
+
+    }
+    function cancel() {
+        document.getElementById("userName").value = "";
+        document.getElementById("fatherName").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("phoneNo").value = "";
+        document.getElementById("male").checked = "";
+        document.getElementById("dob").value = "";
+        document.getElementById("caste").value = "";
+        document.getElementById("income").value = "";
+        document.getElementById("state").value = "";
+        document.getElementById("constituency").value = "";
+        document.getElementById("nominationFor").value = "";
+        document.getElementById("voterId").value = "";
+        document.getElementById("adharNo").value = "";
+        document.getElementById("address").value = "";
+    }
+
+    function loadData() {
+        const getPromise = performAjax("GET", "http://localhost:3344/Candidate/getStates");
+        getPromise
+            .then((statesData) => {
+                getStates(statesData);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+    function getStates(states) {
+        let name = document.getElementById("state");
+        const getValue = JSON.parse(states);
+        for (let i = 0; i < getValue.length; i++) {
+            const getData = document.createElement("OPTION");
+            getData.innerHTML = getValue[i].state;
+            getData.value = getValue[i].state;
+            name.options.add(getData);
+        }
+        const options = []
+
+        document.querySelectorAll('#state > option').forEach((option) => {
+            if (options.includes(option.value)) option.remove()
+            else options.push(option.value)
+        })
+
+    }
+    function ac(value) {
+        const state = document.getElementById("state").value;
+        const getPromise = performAjax("GET", `http://localhost:3344/Candidate/getConstituencyNames?state=${state}`);
+        getPromise
+            .then((details) => {
+                const data = JSON.parse(details);
+                data.map(rec => {
+                    let question = document.getElementById("constituency").value = rec.constituency;
+                    var select = document.getElementById("constituency");
+                    var length = select.options.length;
+                    for (i = 0; i < length; i++) {
+                        select.options[i] = null;
+                    }
+                    for (let i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].constituency);
+
+                        $("#constituency").append(opt);
+                    }
+                    const options = []
+                    document.querySelectorAll('#constituency > option').forEach((option) => {
+                        if (options.includes(option.value)) option.remove()
+                        else options.push(option.value)
+                    })
+
+                })
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+</script>
+
+<body onload="loadData()" style=" background-color: rgb(0, 0, 0, 0); " class="container-fluid"><br>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <center>
+                <h3>Candidate Registration</h3>
+            </center>
+        </div>
+        <div class="col-sm-2"></div>
+    </div><br><br>
+    <form action="">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>UserName</strong><input type="text" id="userName" class="form-control"></div>
+            <div class="col-sm-2"><strong>FatherName</strong><input type="text" id="fatherName" class="form-control">
+            </div>
+            <div class="col-sm-2"><strong>Email Id</strong><input type="email" id="email" class="form-control"></div>
+            <div class="col-sm-2"><strong>Mobile</strong><input type="number" id="phoneNo" class="form-control"></div>
+            <div class="col-sm-2"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>DOB</strong><input type="date" id="dob" class="form-control"></div>
+            <div class="col-sm-2"><strong>Gender</strong><br>
+                <input type="radio" name="gender" id="male"><strong>Male</strong>
+                <input type="radio" name="gender" id="female"><strong>Female</strong>
+            </div>
+
+            <div class="col-sm-2"><strong>State</strong>
+                <select name="" id="state" onchange="ac()" class="form-control">
+                    <option value="">--select--</option>
+
+                </select>
+            </div>
+            <div class="col-sm-2"><strong>Constituency</strong>
+                <select name="" id="constituency" class="form-control">
+                    <option value="" disabled="disabled" selected="selected">--select--</option>
+                </select>
+            </div>
+            <div class="col-sm-2"><strong>nominationFor</strong>
+                <select name="" id="nominationFor" class="form-control">
+                    <option value="--select--">--select--</option>
+                    <option value="MP">MP</option>
+                    <option value="MLA">MLA</option>
+                </select>
+            </div>
+            <div class="col-sm-2"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>Cast</strong>
+                <select name="" id="caste" class="form-control">
+                    <option value="--select--">--select--</option>
+                    <option value="OC">OC</option>
+                    <option value="BC">BC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                </select>
+            </div>
+            <div class="col-sm-2"><strong>Income</strong><input type="number" id="income" class="form-control"></div>
+            <div class="col-sm-2"><strong>VoterId</strong><input type="text" id="voterId" class="form-control"></div>
+            <div class="col-sm-2"><strong>AadharNo</strong><input type="number" id="adharNo" class="form-control"></div>
+            <div class="col-sm-2"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"><strong>Address</strong> <textarea name="" id="address"
+                    class="form-control"></textarea></div>
+            <div class="col-sm-2"><strong>Photo</strong><input type="file" id="image" class="form-control"></div>
+            <div class="col-sm-2"><strong>PartySymbol</strong><input type="file" id="symbol" class="form-control"></div>
+            <div class="col-sm-2"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-2">
+                <center><button type="button" onclick="CandidateRegistration()"
+                        class="btn btn-primary btn-block">Register</button></center>
+            </div>
+            <div class="col-sm-5"><button type="button" onclick="cancel()" class="btn btn-primary btn-block"
+                    style="display: none;">cancel</button></div>
+        </div>
+    </form>
+</body>
+
+</html>

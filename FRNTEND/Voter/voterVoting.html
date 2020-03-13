@@ -1,0 +1,107 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<script>
+    const candidateid = sessionStorage.getItem("candidateid");
+    const voterid = sessionStorage.getItem("voterid");
+    const voterId = sessionStorage.getItem("VoterId");
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(JSON.parse(this.responseText));
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+    function Voting() {
+        document.getElementById("voterId").value = voterId;
+        dataaaaa();
+    }
+
+
+    function vote() {
+        document.getElementById("voterId").value = voterId;
+        const ress = document.getElementById("res").value;
+        const resultCount = "1";
+        if (ress == voterid) {
+            alert("U Already Had Voted");
+
+        } else {
+            const addPromise = performAjax(
+                "POST", "http://localhost:3344/Voter/VotingResults",
+                JSON.stringify({ voter: voterid, voterId, candidate: candidateid, resultCount })
+            );
+            addPromise
+                .then((datas => {
+                    alert("Voted SuccessFull");
+                    window.location.href = "votingResultPage"
+                }))
+                .catch(err => {
+                    alert(err.message);
+                })
+        }
+    }
+    function dataaaaa() {
+        const getPromise = performAjax("GET", `http://localhost:3344/Voter/getResult?voter=${voterid}`);
+        getPromise
+            .then((datas => {
+                if (datas != 0) {
+                    const res = datas[0].voter;
+                    document.getElementById("res").value = res;
+                }
+                else {
+                    alert("Continuee Ur Voting Process");
+                }
+            }))
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+</script>
+
+
+<body onload="Voting()" class="container" style=" background-color: rgb(0, 0, 0, 0);"><br><br><br>
+
+    <form action="">
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-1">VoterId</div>
+            <div class="col-sm-3">
+                <input type="text" disabled="false" class="form-control" id="voterId">
+                <input type="hidden" class="form-control" id="res">
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <button type="button" onclick="vote()" class="btn btn-primary btn-block">Vote</button>
+            </div>
+            <div class="col-sm-4"><button type="button" onclick="cancel()" style="display: none;"
+                    class="btn btn-primary btn-block">cancel</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

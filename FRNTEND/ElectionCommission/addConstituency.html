@@ -1,0 +1,92 @@
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        h3 {
+            color: black;
+        }
+    </style>
+</head>
+<script>
+    function perFormAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource Not Found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function addConstituency() {
+        const state = document.getElementById("state").value;
+        const constituency = document.getElementById("constituency").value;
+        const getPromise = perFormAjax(
+            "POST",
+            "http://localhost:3344/ElectionCommision/addconstituency",
+            JSON.stringify({ state, constituency })
+        );
+        getPromise
+            .then((data) => {
+                alert("Added Successfull");
+                cancel();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+
+    }
+    function cancel() {
+        document.getElementById("state").value = "";
+        document.getElementById("constituency").value = "";
+    }
+
+</script>
+
+<body class="container" style=" background-color: rgb(0, 0, 0, 0);"><br><br><br>
+    <center>
+        <h3 style="color:black"> Add Constituency</h3>
+    </center>
+    <form action="">
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-1"><strong>State:</strong></div>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="state">
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><strong>Constituency:</strong></div>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="constituency">
+            </div>
+            <div class="col-sm-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <button type="button" onclick="addConstituency()" class="btn btn-primary btn-block">Add</button>
+            </div>
+            <div class="col-sm-4"><button type="button" onclick="cancel()" style="display: none;"
+                    class="btn btn-primary btn-block">cancel</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>
